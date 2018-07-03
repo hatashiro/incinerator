@@ -30,18 +30,16 @@ incinerator src/
 The following is a link to the demo of an [example](example) with Chart.js,
 where bundle size is reduced from **~400K** to **~80K**.
 
-> The demo movie will be uploaded shortly.
-
-[![Youtube: Incinerator Demo](https://user-images.githubusercontent.com/1013641/42218553-ff288950-7f03-11e8-9a1b-999a682c36de.png)](https://youtu.be/tj1S0QQOuAM)
+[![Youtube: Incinerator Demo](https://user-images.githubusercontent.com/1013641/42240220-8d0011b6-7f41-11e8-94b4-c2532bc192e4.png)](https://youtu.be/OjHFX_utqBM)
 
 ## How Incinerator works
 
-I recommend reading [the code](index.js), as it's only about 150 line long.
+I recommend reading [the code](index.js), as it's only ~200 lines long.
 
 1. Tag every function with a unique ID
 1. Check if a function is called in runtime via WebSocket
-1. When finished, remove uncalled functions
-1. Remove unused variables or undefined symbols manually
+1. When finished, empty uncalled functions
+1. Remove unused top-level variables to remove unused dependencies
 
 Please also consider playing with an [example](example).
 
