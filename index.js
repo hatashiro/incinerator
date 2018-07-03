@@ -91,6 +91,40 @@ async function confirmIncineration() {
   stdin.end();
 }
 
+function removeUnusedVars(ast) {
+  // referencePaths are cached, so create new ast
+  ast = parser.parse(generate(ast).code);
+
+  let topLevelDecls = [];
+  traverse(ast, {
+    VariableDeclarator(path) {
+      if (
+        t.isIdentifier(path.get("id")) &&
+        t.isProgram(path.parentPath.parentPath)
+      ) {
+        topLevelDecls.push(path);
+      }
+    }
+  });
+
+  let pathsToRemove = [];
+  topLevelDecls.forEach(path => {
+    let name = path.node.id.name;
+    let scope = path.findParent(t.isProgram).scope;
+    if (scope.bindings[name].referencePaths.length === 0) {
+      pathsToRemove.push(path);
+    }
+  });
+
+  // do until there's no unused vars
+  if (pathsToRemove.length) {
+    pathsToRemove.forEach(path => path.remove());
+    return removeUnusedVars(ast);
+  } else {
+    return ast;
+  }
+}
+
 async function main() {
   let jsFiles = [];
   await iterateSourceFiles(rootDir, async file => {
@@ -172,7 +206,7 @@ async function main() {
   await Promise.all(
     jsFiles.map(async ({ file, ast }) => {
       removeTaggings(ast);
-      await writeAST(file, ast);
+      await writeAST(file, removeUnusedVars(ast));
     })
   );
 
