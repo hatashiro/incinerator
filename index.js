@@ -1,10 +1,5 @@
 let { resolve } = require("path");
-let {
-  readFileSync: readFile,
-  writeFileSync: writeFile,
-  readdirSync: readdir,
-  statSync: stat
-} = require("fs");
+let { readFile, writeFile, readdir, stat } = require("fs-extra");
 let parser = require("@babel/parser");
 let traverse = require("@babel/traverse").default;
 let generate = require("@babel/generator").default;
@@ -15,32 +10,19 @@ let chalkAnimation = require("chalk-animation");
 let rootDir = resolve(process.argv[2] || "");
 let port = parseInt(process.env.PORT, 10) || 1236;
 
-function iterateSourceFiles(dir, callback) {
-  readdir(dir)
-    .map(file => resolve(dir, file))
-    .forEach(file => {
-      if (stat(file).isDirectory()) {
-        iterateSourceFiles(file, callback);
+async function iterateSourceFiles(dir, callback) {
+  let files = await readdir(dir);
+  return Promise.all(
+    files.map(file => resolve(dir, file)).map(async file => {
+      let fileStat = await stat(file);
+      if (fileStat.isDirectory()) {
+        await iterateSourceFiles(file, callback);
       } else {
-        callback(file);
+        await callback(file);
       }
-    });
+    })
+  );
 }
-
-let jsFiles = [];
-iterateSourceFiles(rootDir, file => {
-  let source = readFile(file, "utf-8");
-  let ast = null;
-  try {
-    ast = parser.parse(source);
-  } catch (err) {
-    if (err.name !== "SyntaxError") throw err;
-  }
-
-  if (ast) {
-    jsFiles.push({ file, ast });
-  }
-});
 
 function toAST(code) {
   let ast = parser.parse(code);
@@ -86,62 +68,87 @@ function removeTaggings(ast) {
   });
 }
 
-function writeAST(path, ast) {
-  writeFile(path, generate(ast).code + "\n");
+async function writeAST(path, ast) {
+  await writeFile(path, generate(ast).code + "\n");
 }
 
-let functionId = 0;
-let functionPathMap = new Map();
-
-let wss = new ws.Server({ port });
-
-wss.on("connection", ws => {
-  ws.on("message", msg => {
-    functionPathMap.delete(parseInt(msg, 10));
-  });
-});
-
-jsFiles.forEach(({ file, ast }) => {
-  removeTaggings(ast);
-
-  // add new taggings
-  traverse(ast, {
-    Function(path) {
-      if (
-        path.node.id &&
-        path.node.id.name.startsWith(incineratorFunctionPrefix)
-      ) {
-        // skip
+async function confirmIncineration() {
+  let stdin;
+  await new Promise(resolve => {
+    stdin = process.openStdin();
+    stdin.addListener("data", data => {
+      let str = data.toString();
+      if (str.trim().toLowerCase() === "incinerate!") {
+        resolve();
+      } else if (str.includes("!")) {
+        console.log("Well, anyway I'll incinerate!");
+        resolve();
       } else {
-        let id = functionId++;
-        functionPathMap.set(id, path);
-        let body = path.get("body");
-        if (t.isBlock(body)) {
-          body.unshiftContainer("body", tagging(id));
-        }
+        process.stdout.write("> ");
       }
+    });
+
+    process.stdout.write("Waiting for 'incinerate!'\n> ");
+  });
+  stdin.end();
+}
+
+async function main() {
+  let jsFiles = [];
+  await iterateSourceFiles(rootDir, async file => {
+    let source = await readFile(file, "utf-8");
+    let ast = null;
+    try {
+      ast = parser.parse(source);
+    } catch (err) {
+      if (err.name !== "SyntaxError") throw err;
+    }
+
+    if (ast) {
+      jsFiles.push({ file, ast });
     }
   });
 
-  writeAST(file, ast);
-});
+  let functionId = 0;
+  let functionPathMap = new Map();
 
-let stdin = process.openStdin();
-stdin.addListener("data", data => {
-  let str = data.toString();
-  if (str.trim().toLowerCase() === "incinerate!") {
-    incinerate();
-  } else if (str.includes("!")) {
-    console.log("Well, anyway I'll incinerate!");
-    incinerate();
-  } else {
-    process.stdout.write("> ");
-  }
-});
+  let wss = new ws.Server({ port });
 
-process.stdout.write("Waiting for 'incinerate!'\n> ");
+  wss.on("connection", ws => {
+    ws.on("message", msg => {
+      functionPathMap.delete(parseInt(msg, 10));
+    });
+  });
 
-function incinerate() {
+  await Promise.all(
+    jsFiles.map(async ({ file, ast }) => {
+      removeTaggings(ast);
+
+      // add new taggings
+      traverse(ast, {
+        Function(path) {
+          if (
+            path.node.id &&
+            path.node.id.name.startsWith(incineratorFunctionPrefix)
+          ) {
+            // skip
+          } else {
+            let id = functionId++;
+            functionPathMap.set(id, path);
+            let body = path.get("body");
+            if (t.isBlock(body)) {
+              body.unshiftContainer("body", tagging(id));
+            }
+          }
+        }
+      });
+
+      await writeAST(file, ast);
+    })
+  );
+
+  await confirmIncineration();
+
   let text = chalkAnimation.rainbow("\nIncinerating!");
 
   // left paths are unused, let's incinerate them!
@@ -164,14 +171,17 @@ function incinerate() {
     }
   }
 
-  jsFiles.forEach(({ file, ast }) => {
-    removeTaggings(ast);
-    writeAST(file, ast);
-  });
+  await Promise.all(
+    jsFiles.map(async ({ file, ast }) => {
+      removeTaggings(ast);
+      await writeAST(file, ast);
+    })
+  );
 
   wss.close();
-  stdin.end();
 
-  // just display text with no reason for 1 sec because it's rainbow
+  // show text one more sec because it's rainbow
   setTimeout(() => text.stop(), 1000);
 }
+
+main();
