@@ -4,8 +4,8 @@
   "main": "src/index.js",
   "scripts": {
     "test": "echo no test",
-    "build": "webpack",
-    "dev": "webpack --watch"
+    "build": "webpack --mode production src/index.js",
+    "dev": "webpack --watch --mode production src/index.js"
   },
   "license": "ISC",
   "devDependencies": {
