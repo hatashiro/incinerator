@@ -148,7 +148,9 @@ function incinerate() {
   for (let path of functionPathMap.values()) {
     if (t.isFunctionDeclaration(path)) {
       // If it's a declaration, replace with empty declaration
-      path.replaceWith(t.variableDeclaration("var", [t.variableDeclarator(path.node.id)]));
+      path.replaceWith(
+        t.variableDeclaration("var", [t.variableDeclarator(path.node.id)])
+      );
     } else if (t.isExpression(path)) {
       // If it's an expression, replace with null
       path.replaceWith(t.nullLiteral());
