@@ -1,6 +1,6 @@
 {
   "name": "incinerator",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Incinerate unused code!",
   "homepage": "https://github.com/utatti/incinerator",
   "main": "index.js",
