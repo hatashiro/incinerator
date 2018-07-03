@@ -9,7 +9,7 @@ let parser = require("@babel/parser");
 let traverse = require("@babel/traverse").default;
 let generate = require("@babel/generator").default;
 let t = require("@babel/types");
-let ws = require('ws');
+let ws = require("ws");
 
 let rootDir = resolve(process.argv[2] || "");
 let port = parseInt(process.env.PORT, 10) || 1236;
@@ -55,7 +55,8 @@ function toAST(code) {
 
 let incineratorFunctionPrefix = "__incinerator__";
 
-let tagging = tag => toAST(`
+let tagging = tag =>
+  toAST(`
   (function ${incineratorFunctionPrefix}tagging() {
     var g = typeof window === "undefined" ? window : global;
     g.__incinerator = g.__incinerator || new WebSocket("ws://localhost:${port}");
@@ -73,9 +74,10 @@ function removeTaggings(ast) {
   traverse(ast, {
     CallExpression(path) {
       let callee = path.get("callee");
-      if (callee.type === "FunctionExpression" &&
-          callee.node.id &&
-          callee.node.id.name.startsWith(incineratorFunctionPrefix)
+      if (
+        callee.type === "FunctionExpression" &&
+        callee.node.id &&
+        callee.node.id.name.startsWith(incineratorFunctionPrefix)
       ) {
         path.remove();
       }
@@ -104,7 +106,10 @@ jsFiles.forEach(({ file, ast }) => {
   // add new taggings
   traverse(ast, {
     Function(path) {
-      if (path.node.id && path.node.id.name.startsWith(incineratorFunctionPrefix)) {
+      if (
+        path.node.id &&
+        path.node.id.name.startsWith(incineratorFunctionPrefix)
+      ) {
         // skip
       } else {
         let id = functionId++;
@@ -124,6 +129,7 @@ stdin.addListener("data", data => {
     incinerate();
   }
 });
+
 console.log("Waiting for 'incinerate!'...");
 
 function incinerate() {
