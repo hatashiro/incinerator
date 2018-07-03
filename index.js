@@ -10,18 +10,16 @@ let chalkAnimation = require("chalk-animation");
 let rootDir = resolve(process.argv[2] || "");
 let port = parseInt(process.env.PORT, 10) || 1236;
 
-async function iterateSourceFiles(dir, callback) {
-  let files = await readdir(dir);
-  return Promise.all(
-    files.map(file => resolve(dir, file)).map(async file => {
-      let fileStat = await stat(file);
-      if (fileStat.isDirectory()) {
-        await iterateSourceFiles(file, callback);
-      } else {
-        await callback(file);
-      }
-    })
-  );
+async function iterateSourceFiles(root, callback) {
+  let fileStat = await stat(root);
+  if (fileStat.isDirectory()) {
+    let files = await readdir(root);
+    return Promise.all(
+      files.map(file => iterateSourceFiles(resolve(root, file), callback))
+    );
+  } else {
+    await callback(root);
+  }
 }
 
 function toAST(code) {
