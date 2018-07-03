@@ -25,6 +25,7 @@
     "@babel/parser": "^7.0.0-beta.51",
     "@babel/traverse": "^7.0.0-beta.51",
     "@babel/types": "^7.0.0-beta.51",
+    "chalk-animation": "^1.6.0",
     "ws": "^5.2.1"
   },
   "devDependencies": {

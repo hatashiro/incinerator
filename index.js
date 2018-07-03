@@ -10,6 +10,7 @@ let traverse = require("@babel/traverse").default;
 let generate = require("@babel/generator").default;
 let t = require("@babel/types");
 let ws = require("ws");
+let chalkAnimation = require("chalk-animation");
 
 let rootDir = resolve(process.argv[2] || "");
 let port = parseInt(process.env.PORT, 10) || 1236;
@@ -128,14 +129,21 @@ jsFiles.forEach(({ file, ast }) => {
 let stdin = process.openStdin();
 stdin.addListener("data", data => {
   let str = data.toString();
-  if (str.includes("!")) {
+  if (str.trim().toLowerCase() === "incinerate!") {
     incinerate();
+  } else if (str.includes("!")) {
+    console.log("Well, anyway I'll incinerate!");
+    incinerate();
+  } else {
+    process.stdout.write("> ");
   }
 });
 
-console.log("Waiting for 'incinerate!'...");
+process.stdout.write("Waiting for 'incinerate!'\n> ");
 
 function incinerate() {
+  let text = chalkAnimation.rainbow("\nIncinerating!");
+
   // left paths are unused, let's incinerate them!
   for (let path of functionPathMap.values()) {
     if (t.isFunctionDeclaration(path)) {
@@ -153,4 +161,7 @@ function incinerate() {
 
   wss.close();
   stdin.end();
+
+  // just display text with no reason for 1 sec because it's rainbow
+  setTimeout(() => text.stop(), 1000);
 }
