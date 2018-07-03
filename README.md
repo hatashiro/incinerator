@@ -32,6 +32,14 @@ where bundle size is reduced from **~400K** to **~80K**.
 
 [![Youtube: Incinerator Demo](https://user-images.githubusercontent.com/1013641/42240220-8d0011b6-7f41-11e8-94b4-c2532bc192e4.png)](https://youtu.be/OjHFX_utqBM)
 
+### Before incineration
+
+<img width="1240" alt="before" src="https://user-images.githubusercontent.com/1013641/42241252-e1f1ed7c-7f44-11e8-8aa4-35a0ef0cc93d.png">
+
+### After incineration
+
+<img width="1239" alt="after" src="https://user-images.githubusercontent.com/1013641/42241179-9932d43e-7f44-11e8-90a0-e2780496e096.png">
+
 ## How Incinerator works
 
 I recommend reading [the code](index.js), as it's only ~200 lines long.
