@@ -1,0 +1,29 @@
+{
+  "name": "incinerator",
+  "version": "0.0.0",
+  "description": "Incinerate unused code!",
+  "homepage": "https://github.com/utatti/incinerator",
+  "main": "index.js",
+  "bin": {
+    "incinerator": "bin/incinerator"
+  },
+  "scripts": {
+    "test": "echo no test yet"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/utatti/incinerator.git"
+  },
+  "author": "Hyunje Jun <me@noraesae.net>",
+  "bugs": {
+    "url": "https://github.com/utatti/incinerator/issues"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "@babel/generator": "^7.0.0-beta.51",
+    "@babel/parser": "^7.0.0-beta.51",
+    "@babel/traverse": "^7.0.0-beta.51",
+    "@babel/types": "^7.0.0-beta.51",
+    "ws": "^5.2.1"
+  }
+}
