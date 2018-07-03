@@ -87,7 +87,7 @@ function removeTaggings(ast) {
 }
 
 function writeAST(path, ast) {
-  writeFile(path, generate(ast).code);
+  writeFile(path, generate(ast).code + "\n");
 }
 
 let functionId = 0;
