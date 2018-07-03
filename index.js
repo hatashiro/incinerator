@@ -147,8 +147,16 @@ function incinerate() {
   // left paths are unused, let's incinerate them!
   for (let path of functionPathMap.values()) {
     if (t.isFunctionDeclaration(path)) {
-      path.remove();
+      // If it's a declaration, replace with empty declaration
+      path.replaceWith(t.variableDeclaration("var", [t.variableDeclarator(path.node.id)]));
+    } else if (t.isExpression(path)) {
+      // If it's an expression, replace with null
+      path.replaceWith(t.nullLiteral());
+    } else if (t.isObjectMethod(path)) {
+      // If it's an object method, replace with null property
+      path.replaceWith(t.objectProperty(path.get("key"), t.nullLiteral()));
     } else {
+      // for the others, just empty its params and body
       path.node.params = [];
       path.node.body = t.blockStatement([]);
     }
