@@ -62,3 +62,4 @@ typings/
 
 # Example
 example/dist
+example/node_modules
