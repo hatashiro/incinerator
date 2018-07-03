@@ -1,0 +1,22 @@
+{
+  "name": "example",
+  "version": "0.0.0",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo no test",
+    "build": "webpack",
+    "dev": "webpack --watch"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "babel-eslint": "^8.2.5",
+    "eslint": "^5.0.1",
+    "eslint-loader": "^2.0.0",
+    "webpack": "^4.14.0",
+    "webpack-cli": "^3.0.8"
+  },
+  "dependencies": {
+    "chartjs-color": "^2.2.0",
+    "moment": "^2.22.2"
+  }
+}
