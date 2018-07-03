@@ -8,7 +8,7 @@ A PoC implementation of unused code elimination in runtime
 
 It's a proof-of-concept implementation of unused code elemenation, which
 means Incinerator checks if a part of code is actually used in *runtime* and
-remove unless it is. For the time being, only function blocks are checked.
+removes it if unused. For the time being, only function blocks are checked.
 
 ## Install
 
@@ -29,6 +29,8 @@ incinerator src/
 
 The following is a link to the demo of an [example](example) with Chart.js,
 where bundle size is reduced from **~400K** to **~80K**.
+
+> The demo movie will be uploaded shortly.
 
 [![Youtube: Incinerator Demo](https://user-images.githubusercontent.com/1013641/42218553-ff288950-7f03-11e8-9a1b-999a682c36de.png)](https://youtu.be/tj1S0QQOuAM)
 
