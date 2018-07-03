@@ -8,7 +8,8 @@
     "incinerator": "bin/incinerator"
   },
   "scripts": {
-    "test": "echo no test yet"
+    "test": "echo no test yet",
+    "format": "prettier --write index.js"
   },
   "repository": {
     "type": "git",
@@ -25,5 +26,8 @@
     "@babel/traverse": "^7.0.0-beta.51",
     "@babel/types": "^7.0.0-beta.51",
     "ws": "^5.2.1"
+  },
+  "devDependencies": {
+    "prettier": "^1.13.7"
   }
 }
