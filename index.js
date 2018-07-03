@@ -75,7 +75,7 @@ function removeTaggings(ast) {
     CallExpression(path) {
       let callee = path.get("callee");
       if (
-        callee.type === "FunctionExpression" &&
+        t.isFunctionExpression(callee) &&
         callee.node.id &&
         callee.node.id.name.startsWith(incineratorFunctionPrefix)
       ) {
@@ -114,7 +114,10 @@ jsFiles.forEach(({ file, ast }) => {
       } else {
         let id = functionId++;
         functionPathMap.set(id, path);
-        path.get("body").unshiftContainer("body", tagging(id));
+        let body = path.get("body");
+        if (t.isBlock(body)) {
+          body.unshiftContainer("body", tagging(id));
+        }
       }
     }
   });
@@ -133,10 +136,14 @@ stdin.addListener("data", data => {
 console.log("Waiting for 'incinerate!'...");
 
 function incinerate() {
-  // left paths are unused, let's empty them!
+  // left paths are unused, let's incinerate them!
   for (let path of functionPathMap.values()) {
-    path.node.params = [];
-    path.node.body = t.blockStatement([]);
+    if (t.isFunctionDeclaration(path)) {
+      path.remove();
+    } else {
+      path.node.params = [];
+      path.node.body = t.blockStatement([]);
+    }
   }
 
   jsFiles.forEach(({ file, ast }) => {
