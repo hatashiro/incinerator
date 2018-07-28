@@ -40,7 +40,7 @@ let tagging = tag =>
   toAST(`
   (function ${incineratorFunctionPrefix}tagging() {
     var g = typeof window === "undefined" ? window : global;
-    g.__incinerator = g.__incinerator || new WebSocket(\`ws:\${location.hostname}//:${port}\`);
+    g.__incinerator = g.__incinerator || new WebSocket(\`ws://\${location.hostname}:${port}\`);
     if (g.__incinerator.readyState === 1) {
       g.__incinerator.send(${tag});
     } else {
