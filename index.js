@@ -81,12 +81,10 @@ async function confirmIncineration() {
       } else if (str.includes("!")) {
         console.log("Well, anyway I'll incinerate!");
         resolve();
-      } else {
-        process.stdout.write("> ");
       }
     });
 
-    process.stdout.write("Waiting for 'incinerate!'\n> ");
+    console.log("Waiting for 'incinerate!'");
   });
   stdin.end();
 }
@@ -147,7 +145,9 @@ async function main() {
   let wss = new ws.Server({ port });
 
   wss.on("connection", ws => {
+    console.log("Connected.");
     ws.on("message", msg => {
+      process.stdout.write(".");
       functionPathMap.delete(parseInt(msg, 10));
     });
   });
