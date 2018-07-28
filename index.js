@@ -8,7 +8,7 @@ let ws = require("ws");
 let chalkAnimation = require("chalk-animation");
 
 let rootDir = resolve(process.argv[2] || "");
-let port = parseInt(process.env.PORT, 10) || 1236;
+let port = parseInt(process.env.PORT, 10) || 8123;
 
 async function iterateSourceFiles(root, callback) {
   let fileStat = await stat(root);
