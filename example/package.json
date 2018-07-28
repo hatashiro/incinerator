@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo no test",
     "build": "webpack --mode production src/index.js",
-    "dev": "webpack --watch --mode production src/index.js"
+    "dev": "webpack --mode development --watch src/index.js"
   },
   "license": "ISC",
   "devDependencies": {
