@@ -8,6 +8,6 @@ module.exports = {
     aggregateTimeout: 2000
   },
   plugins: isAnalyzing ? [
-    new BundleAnalyzerPlugin()
+    new BundleAnalyzerPlugin({ analyzerHost: "0.0.0.0" })
   ] : []
 };
